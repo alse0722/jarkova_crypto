@@ -96,10 +96,6 @@ class EllipticCurve
     
     s7
   end
-
-  def get_points(generator)
-    generator[:r].times 
-  end
   
 end
 
@@ -109,7 +105,7 @@ params = {
   debug_mode: 'all',
   by_steps: false,
   methods_params: {
-    l: 7,
+    l: 13,
     m: 13,
     debug_mode: 'none',
     points_debug_mode: 'all'

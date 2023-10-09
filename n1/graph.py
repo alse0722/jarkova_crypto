@@ -11,7 +11,7 @@ def read_coordinates(filename):
 
 def plot_coordinates(coordinates):
     x_values, y_values = zip(*coordinates)
-    plt.scatter(x_values, y_values)
+    plt.scatter(x_values, y_values, s=15)
     plt.title('Coordinates Graph')
     plt.xlabel('X')
     plt.ylabel('Y')
@@ -33,4 +33,4 @@ def plot_coordinates_alt(coordinates):
 
 coordinates = read_coordinates('coordinates.txt')
 plot_coordinates(coordinates)
-plot_coordinates_alt(coordinates)
+# plot_coordinates_alt(coordinates)
