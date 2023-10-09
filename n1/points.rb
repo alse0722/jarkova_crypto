@@ -9,6 +9,9 @@ class Points
   end
 
   def sum(p, q)
+    # pp 'sum'
+    # pp [p,q]
+
     r = {}
 
     return q if p[:status] == :zero
@@ -29,6 +32,8 @@ class Points
   end
 
   def mult(p, n)
+    # pp 'mul'
+    # pp [p, n]
     res = p
 
     (n-1).times do 

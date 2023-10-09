@@ -1,9 +1,11 @@
 require './points.rb'
+require './generator.rb'
 
 class Methods
 
   def initialize(params = {})
     @debug_mode = params.dig(:debug_mode).to_sym
+    @points_debug_mode = params.dig(:points_debug_mode).to_sym
     @l = params.dig(:l).to_i
     @m = params.dig(:m).to_i
   end
@@ -89,7 +91,7 @@ class Methods
     n << n[2] * (-1)
 
     n = n.map {|e| e += p + 1}
-    puts n
+    # puts n
 
     triplets = []
 
@@ -124,6 +126,7 @@ class Methods
     triple = triplets[-1]
 
     to_step6 = false
+
     while !to_step6
       x0 = rand(1..p)
       y0 = rand(1..p)
@@ -149,15 +152,15 @@ class Methods
     n = data[:k] * data[:r]
     @curve = Points.new(a: 0, b: data[:b], p: data[:p])
     inf = @curve.mult({x: data[:xo], y: data[:yo]}, n)
-    pp inf
-    return inf[:status] == :zero
+    # pp inf
+    return inf[:status] != :zero
   end
 
   def step7(data)
-    @curve = Points.new(a: 0, b: data[:b], p: data[:p])
+    @curve = Points.new(a: 0, b: data[:b], p: data[:p], debug_mode: @points_debug_mode)
     q = @curve.mult({x: data[:xo], y: data[:yo]}, data[:k])
-    pp q
-    return {p: data[:p], b: data[b], q: q, r: data[:r]}
+    # pp q
+    return {p: data[:p], b: data[:b], q: q, r: data[:r]}
   end
 
   private
