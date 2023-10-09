@@ -121,7 +121,7 @@ curve = EllipticCurve.new(params)
 forming_data = curve.get_generator
 
 generator = Generator.new({debug_mode: 'all', data: forming_data, filename: 'coordinates.txt'})
-pp generator
+# pp generator
 points = generator.start
 generator.to_file(points)
-generator.show
+# generator.show

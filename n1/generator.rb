@@ -1,5 +1,5 @@
 require './points.rb'
-require './graph.rb'
+# require './graph.rb'
 
 
 class Generator
@@ -13,7 +13,7 @@ class Generator
     @q = params[:data].dig(:q)
 
     @curve = Points.new(a: 0, b: @b, p: @p)
-    @graph = Graph.new(@filename)
+    # @graph = Graph.new(@filename)
   end
 
   def start
@@ -29,7 +29,7 @@ class Generator
     if @debug_mode == :all
       # puts arr
       puts "\n[GEN] All points generated"
-      puts "\tPoints total count: #{arr.size}"
+      puts "\tPoints total count: #{arr.uniq.size}"
       puts "\tGroup size: #{@r}"
     end
 
@@ -43,7 +43,7 @@ class Generator
     File.delete(@filename.to_s) if File.exist?(@filename.to_s)
 
     File.open(@filename, "w") do |file|
-      arr.each do |point|
+      arr.uniq.each do |point|
         file.puts "#{point[:x]} #{point[:y]}" if point[:status] != :zero
       end
     end
@@ -51,8 +51,8 @@ class Generator
     puts "\n[GEN] All points (exept zero one) were written to #{@filename}"
   end
 
-  def show
-    picture = @graph.make_graph
-    puts "\n[GEN] Find graph in #{picture}" if @debug_mode == :all
-  end
+  # def show
+  #   picture = @graph.make_graph
+  #   puts "\n[GEN] Find graph in #{picture}" if @debug_mode == :all
+  # end
 end

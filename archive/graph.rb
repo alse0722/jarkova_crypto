@@ -1,4 +1,4 @@
-require 'gruff'
+# require 'gruff'
 
 class Graph
 
