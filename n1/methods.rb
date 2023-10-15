@@ -20,8 +20,7 @@ class Methods
     p
   end
 
-  def step2(p = 0)
-    d = 3
+  def step2(p = 0, d = 3)
 
     return {} if lezhandr2(-d, p) == -1
 
@@ -53,6 +52,7 @@ class Methods
 
     u_arr.delete(0)
     u_arr = u_arr.reverse()
+    arh = reactualize(p)
 
     a_arr = [u_arr[0]]
     b_arr = [1]
@@ -81,7 +81,7 @@ class Methods
       b_arr << devided_b
     end
 
-    {c: a_arr[-1], d: b_arr[-1]}
+    {c: arh[0], d: arh[1]}
   end
 
   def step3(p, c, d)
@@ -321,6 +321,19 @@ class Methods
     end
 
     r_arr.last
+  end
+
+  def reactualize(p)
+    res = []
+    (0..Math.sqrt(p).to_i).each do |a|
+      (0..Math.sqrt(p).to_i).each do |b|
+        if a ** 2 + 3 * b ** 2 == p
+          res << a
+          res << b
+        end
+      end
+    end
+    pp res
   end
 
   def lezhandr2(a, p)
