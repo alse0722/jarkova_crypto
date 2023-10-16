@@ -119,6 +119,9 @@ while @l < 8
   @l = gets.strip.to_i
 end
 
+puts "\n[Input] Enter m"
+@m = gets.strip.to_i
+
 params = {
   # bin_length: 12,
   # m_parameter: 13,
@@ -126,7 +129,7 @@ params = {
   by_steps: false,
   methods_params: {
     l: @l,
-    m: 13,
+    m: @m,
     debug_mode: 'none',
     points_debug_mode: 'all'
   }
