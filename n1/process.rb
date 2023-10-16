@@ -111,11 +111,11 @@ class EllipticCurve
   
 end
 
-puts "\n[Input] Enter l > 7"
+puts "\n[Input] Enter l > 2"
 @l = gets.strip.to_i
 
-while @l < 8
-  puts "[Input] l is too low!\n\n[Input] Enter l > 7"
+while @l < 3
+  puts "[Input] l is too low!\n\n[Input] Enter l > 2"
   @l = gets.strip.to_i
 end
 

@@ -202,7 +202,14 @@ class Methods
     end
 
     g.times do
-      a = 2 + rand(n - 4)
+      # pp "n: #{n}, rand: #{rand(n-4)}, a: #{2 + rand(n - 4)}"
+      
+      if n == 4 
+        a = 2
+      else
+        a = 2 + rand(n - 4)
+      end
+
       x = a.pow(d, n)  # x = (a**d) % n
       
       next if x == 1 || x == n - 1
@@ -333,7 +340,7 @@ class Methods
         end
       end
     end
-    
+
     res
   end
 
