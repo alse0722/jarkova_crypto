@@ -60,7 +60,7 @@ class EllipticCurve
 
       if @debug_mode == :all
         puts "\n[S4] Testing pr contest with #{s4} triplets"
-        puts "\tGood triplets: #{s3} #{pr_contest ? '--> Failed' : '--> Successed'}"
+        puts "\tGood triplets: #{s4} #{pr_contest ? '--> Failed' : '--> Successed'}"
       end
       gets if @by_steps
     end
