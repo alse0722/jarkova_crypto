@@ -333,7 +333,8 @@ class Methods
         end
       end
     end
-    pp res
+    
+    res
   end
 
   def lezhandr2(a, p)
