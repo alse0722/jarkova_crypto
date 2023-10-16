@@ -27,20 +27,32 @@ class EllipticCurve
         gets if @by_steps
 
         s2 = @methods.step2(s1)
-        if @debug_mode == :all
-          puts "\n[S2] Expanded p = c^2 + 3d^2 in Z_(sqrt (-3))"
-          puts "\tResult = #{s2}" if @debug_mode == :all
-        end
-        gets if @by_steps
+        if s2.empty?
+          pnr_triplet_empty = true
 
-        s3 = @methods.step3(s1, s2[:c], s2[:d])
-        pnr_triplet_empty = s3.empty?
+          if @debug_mode == :all
+            puts "\n[S2] Tried to expand p = c^2 + 3d^2 in Z_(sqrt (-3))"
+            puts "\tFailed" if @debug_mode == :all
+          end
 
-        if @debug_mode == :all
-          puts "\n[S3] Testing pnr conditions with #{[s1, s2]} triplets"
-          puts "\tGood triplets: #{s3} #{pnr_triplet_empty ? '--> Failed' : '--> Successed'}"
+          gets if @by_steps
+        else
+          if @debug_mode == :all
+            puts "\n[S2] Tried to expand p = c^2 + 3d^2 in Z_(sqrt (-3))"
+            puts "\tResult = #{s2}" if @debug_mode == :all
+          end
+          gets if @by_steps
+
+          s3 = @methods.step3(s1, s2[:c], s2[:d])
+          pnr_triplet_empty = s3.empty?
+
+          if @debug_mode == :all
+            puts "\n[S3] Testing pnr conditions with #{[s1, s2]} triplets"
+            puts "\tGood triplets: #{s3} #{pnr_triplet_empty ? '--> Failed' : '--> Successed'}"
+          end
+
+          gets if @by_steps
         end
-        gets if @by_steps
       end
 
       s4 = @methods.step4(s3)
@@ -99,13 +111,21 @@ class EllipticCurve
   
 end
 
+puts "\n[Input] Enter l > 7"
+@l = gets.strip.to_i
+
+while @l < 8
+  puts "[Input] l is too low!\n\n[Input] Enter l > 7"
+  @l = gets.strip.to_i
+end
+
 params = {
   # bin_length: 12,
   # m_parameter: 13,
   debug_mode: 'all',
   by_steps: false,
   methods_params: {
-    l: 13,
+    l: @l,
     m: 13,
     debug_mode: 'none',
     points_debug_mode: 'all'

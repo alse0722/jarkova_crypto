@@ -6,7 +6,7 @@ def read_coordinates(filename):
         for line in file:
             x, y = map(int, line.strip().split(' '))
             coordinates.append((x, y))
-    print(coordinates)
+    # print(coordinates)
     return coordinates
 
 def plot_coordinates(coordinates):
