@@ -119,8 +119,8 @@ class Steps
   end
 
   def step4
-    puts "\nШаг 4: Вычисляем точки Q = [2s+1]P и R = [q+1]P"
-    @loader.make_log(:step4, "Шаг 4: Вычисляем точки Q = [2s+1]P и R = [q+1]P", :ok, "\n")
+    puts "\nШаг 4: Вычисляем точки Q = [2s+1]P и R = [p+1]P"
+    @loader.make_log(:step4, "Шаг 4: Вычисляем точки Q = [2s+1]P и R = [p+1]P", :ok, "\n")
 
     #берем параметры из файла
     @data = @loader.read_data(@data_file, "Параметры системы")
@@ -134,7 +134,7 @@ class Steps
     show_current_status if @debug_mode
 
     #логировние и запись состояния системы после шага в файл
-    @loader.make_log(:step4, "Вычислены точки Q = [2s+1]P и R = [q+1]P", :ok)
+    @loader.make_log(:step4, "Вычислены точки Q = [2s+1]P и R = [p+1]P", :ok)
     @loader.write_data(@data, @data_file, "Параметры системы после шага 4")
 
     return @tests.test_step4
@@ -153,7 +153,7 @@ class Steps
     @data[:points_rq] = []
     (0..@data[:s]).each do |i|
       @data[:points_rq] << @points.sum(@data[:point_r], @points.mult(@data[:point_q], i))
-      @data[:points_rq] << @points.sum(@data[:point_r], @points.mult(@data[:point_q], -i))
+      @data[:points_rq] << @points.sum(@data[:point_r], @points.inverse2(@points.mult(@data[:point_q], i), @data[:p]))
     end
 
     show_current_status if @debug_mode
@@ -209,9 +209,9 @@ class Steps
 
   def step7
     puts "\nШаг 7: Вычисляем из пар (i, j) параметры mi = p + 1 + (2 * s + 1) * i - j" \
-      "и найдем порядок эллиптической кривой выполнив проверку ZERO == [mi]P." 
+      " и найдем порядок эллиптической кривой выполнив проверку ZERO == [mi]P." 
     @loader.make_log(:step6, "Шаг 7: Вычисляем из пар (i, j) параметры mi = p + 1 + (2 * s + 1) * i - j" \
-      "и найдем порядок эллиптической кривой выполнив проверку ZERO == [mi]P.", :ok, "\n")
+      " и найдем порядок эллиптической кривой выполнив проверку ZERO == [mi]P.", :ok, "\n")
 
     #берем параметры из файла
     @data = @loader.read_data(@data_file, "Параметры системы")
@@ -230,10 +230,12 @@ class Steps
 
     #логировние и запись состояния системы после шага в файл
     @loader.make_log(:step6, "Шаг 7: Вычисляем из пар (i, j) параметры mi = p + 1 + (2 * s + 1) * i - j" \
-      "и найдем порядок эллиптической кривой выполнив проверку ZERO == [mi]P.", :ok)
+      " и найдем порядок эллиптической кривой выполнив проверку ZERO == [mi]P.", :ok)
     @loader.write_data(@data, @data_file, "Параметры системы после шага 7")
 
-    return @tests.test_step5
+    @tests.test_step7
+
+    return @data[:m_variants].first
   end
 
   private

@@ -44,6 +44,15 @@ class Points
     inv ? inverse2(res, @p) : res
   end
 
+  def inverse2(a, p)
+    if a[:status] == :zero
+      return a
+    end
+    
+    a[:y] = p - a[:y]
+    return a
+  end
+
   private
 
   def exea(a, b)
@@ -65,11 +74,6 @@ class Points
     gcd, x, y = exea(n, p)
     raise %{#{n} has no multiplicative inverse modulo #{p}} if gcd != 1
     x % p
-  end
-
-  def inverse2(a, p)
-    a[:y] = p - a[:y]
-    return a
   end
 
   def bits(n)

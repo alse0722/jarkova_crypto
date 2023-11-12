@@ -10,8 +10,9 @@ class Tests
   def test_step0
     @td = @loader.get_data
 
-    all_good = (true
-      
+    all_good = (
+      test_existance(:test_step0, [:a, :b, :p]) &&
+      test_p_is_prime(:test_step0)
     )
 
     if all_good
@@ -28,8 +29,9 @@ class Tests
   def test_step1
     @td = @loader.get_data
 
-    all_good = (true
-      
+    all_good = (
+      test_existance(:test_step1, [:a, :b, :p]) &&
+      test_p_is_prime(:test_step1)
     )
 
     if all_good
@@ -46,8 +48,11 @@ class Tests
   def test_step2
     @td = @loader.get_data
 
-    all_good = (true
-      
+    all_good = (test_existance(:test_step2, [:a, :b, :p, :s, :point_p]) &&
+      test_p_is_prime(:test_step2) &&
+      test_s_is_sqrt4(:test_step2) &&
+      test_point_fullness(:test_step2, @td[:point_p], :p) &&
+      test_point_in_curve(:test_step2, @td[:point_p], :p)
     )
 
     if all_good
@@ -64,8 +69,12 @@ class Tests
   def test_step3
     @td = @loader.get_data
 
-    all_good = (true
-
+    all_good = (
+      test_existance(:test_step3, [:p, :s, :point_p]) &&
+      test_p_is_prime(:test_step3) &&
+      test_s_is_sqrt4(:test_step3) &&
+      test_point_fullness(:test_step3, @td[:point_p], :p) &&
+      test_point_in_curve(:test_step3, @td[:point_p], :p)
     )
 
     if all_good
@@ -82,8 +91,17 @@ class Tests
   def test_step4
     @td = @loader.get_data
 
-    all_good = (true
-      
+    all_good = (test_existance(:test_step4, [:a, :b, :s, :p, :point_p, :point_r, :point_q]) &&
+      test_s_is_sqrt4(:test_step4) &&
+      test_p_is_prime(:test_step4) &&
+      test_point_fullness(:test_step4, @td[:point_p], :p) &&
+      test_point_in_curve(:test_step4, @td[:point_p], :p) &&
+      test_point_fullness(:test_step4, @td[:point_r], :r) &&
+      test_point_in_curve(:test_step4, @td[:point_r], :r) &&
+      test_point_value(:test_step4, @td[:point_r], :r) &&
+      test_point_fullness(:test_step4, @td[:point_q], :q) &&
+      test_point_in_curve(:test_step4, @td[:point_q], :q) &&
+      test_point_value(:test_step4, @td[:point_q], :q)
     )
 
     if all_good
@@ -100,8 +118,15 @@ class Tests
   def test_step5
     @td = @loader.get_data
 
-    all_good = (true
-      
+    all_good = (test_existance(:test_step5, [:s, :points_p, :points_rq]) &&
+      test_s_is_sqrt4(:test_step5) &&
+      test_points_array_fullness(:test_step5, :points_p) &&
+      test_points_array_in_curve(:test_step5, :points_p) &&
+      test_points_array_count(:test_step5, :points_p) &&
+      test_zero_point_in_array(:test_step5, :points_p) &&
+      test_points_array_fullness(:test_step5, :points_rq) &&
+      test_points_array_in_curve(:test_step5, :points_rq) &&
+      test_points_array_count(:test_step5, :points_rq)
     )
 
     if all_good
@@ -118,8 +143,13 @@ class Tests
   def test_step6
     @td = @loader.get_data
 
-    all_good = (true
-      
+    all_good = (test_existance(:test_step6, [:p, :s, :koeffs_ij, :point_p]) &&
+      test_p_is_prime(:test_step6) &&
+      test_s_is_sqrt4(:test_step6) &&
+      test_koeffs_fullness(:test_step6, @td[:koeffs_ij], :ij) &&
+      test_koeffs_values(:test_step6, @td[:koeffs_ij], :ij) &&
+      test_point_fullness(:test_step6, @td[:point_p], :p) &&
+      test_point_in_curve(:test_step6, @td[:point_p], :p)
     )
 
     if all_good
@@ -136,8 +166,11 @@ class Tests
   def test_step7
     @td = @loader.get_data
 
-    all_good = (true
-      
+    all_good = (test_existance(:test_step7, [:m_variants, :point_p]) &&
+      test_point_fullness(:test_step7, @td[:point_p], :p) &&
+      test_point_in_curve(:test_step7, @td[:point_p], :p) &&
+      test_koeffs_fullness(:test_step7, @td[:m_variants], :mi) &&
+      test_koeffs_values(:test_step7, @td[:m_variants], :mi)
     )
 
     if all_good
@@ -151,23 +184,23 @@ class Tests
     return test_result
   end
 
-  def test_step8
-    @td = @loader.get_data
+  # def test_step8
+  #   @td = @loader.get_data
 
-    all_good = (true
+  #   all_good = (true
       
-    )
+  #   )
 
-    if all_good
-      test_result = {status: :ok, msg: 'Проверка параметров шага 8 пройдена успешно'}
-    else
-      test_result = {status: :error, msg: 'Проверка параметров шага 8 не пройдена'}
-    end
+  #   if all_good
+  #     test_result = {status: :ok, msg: 'Проверка параметров шага 8 пройдена успешно'}
+  #   else
+  #     test_result = {status: :error, msg: 'Проверка параметров шага 8 не пройдена'}
+  #   end
     
-    @loader.make_log(:test_step8, test_result[:msg], test_result[:status])
+  #   @loader.make_log(:test_step8, test_result[:msg], test_result[:status])
 
-    return test_result
-  end
+  #   return test_result
+  # end
 
   private
 
@@ -178,7 +211,7 @@ class Tests
     if all_good
       @loader.make_log(step, "Необходимые для шага параметры #{params} присутвуют", :ok) if @debug_mode
     else
-      @loader.make_log(step, "Необходимые для шага параметры #{params} присутвуют", :error) if @debug_mode
+      @loader.make_log(step, "Некоторые необходимые для шага параметры #{params} отсутвуют", :error) if @debug_mode
     end
 
     all_good
@@ -246,7 +279,7 @@ class Tests
       when :points_p
         @td[:points_p].count == 2 * @td[:s] + 1
       when :points_rq
-        @td[:points_rq].count == 2 * @td[:points_p].count
+        @td[:points_rq].count == 2 * (@td[:s] + 1)
       else
         false
       end
@@ -310,34 +343,80 @@ class Tests
     all_good
   end
 
-  def test_
+  def test_point_value(step, point, point_name = nil)
+    @points = Points.new(a: @td[:a], b: @td[:b], p: @td[:p])
+    pp @points
+
     all_good = true
 
-    if all_good
-      @loader.make_log(step, "", :ok)
+    all_good &= case point_name
+    when :r
+      point == @points.mult(@td[:point_p], @td[:p] + 1)
+    when :q
+      point == @points.mult(@td[:point_p], 2 * @td[:s] + 1)
     else
-      @loader.make_log(step, "", :error)
+      false
     end
+
+    if all_good
+      @loader.make_log(step, "Точка #{point_name.nil? ? point : point_name.to_s} найдена верно", :ok) if @debug_mode && !point_name.nil?
+    else
+      @loader.make_log(step, "Точка #{point_name.nil? ? point : point_name.to_s} найдена неверно", :error)
+    end
+
+    all_good
   end
   
-  def test_
+  def test_koeffs_fullness(step, koeffs, array_name)
     all_good = true
 
-    if all_good
-      @loader.make_log(step, "", :ok)
+    case array_name
+    when :ij
+      koeffs.each do |koeff|
+        all_good &= !koeff[:i].nil? && !koeff[:j].nil?
+      end
+    when :mi
+      koeffs.each do |koeff|
+        all_good &= !koeff.nil?
+      end
     else
-      @loader.make_log(step, "", :error)
+      all_good &=false
     end
+
+    if all_good
+      @loader.make_log(step, "Все коэффициенты в массиве #{array_name} заполнены", :ok)
+    else
+      @loader.make_log(step, "Некоторые коэффициенты в массиве #{array_name} не заполнены", :error)
+    end
+
+    all_good
   end
   
-  def test_
+  def test_koeffs_values(step, koeffs, array_name)
     all_good = true
 
-    if all_good
-      @loader.make_log(step, "", :ok)
+    case array_name
+    when :ij
+      koeffs.each do |koeff|
+        all_good &= koeff[:i] <= @td[:s] && koeff[:j] <= @td[:s]
+      end
+    when :mi
+      koeffs.each do |koeff|
+        all_good &= (@td[:p] + 1 - 2 * Math.sqrt(@td[:p]) <= koeff &&
+          koeff <= @td[:p] + 1 + 2 * Math.sqrt(@td[:p])
+        )
+      end
     else
-      @loader.make_log(step, "", :error)
+      all_good &= false
     end
+
+    if all_good
+      @loader.make_log(step, "Все элементы массива #{array_name} находятся в пределах своих возможных значений", :ok)
+    else
+      @loader.make_log(step, "Некоторые элементы массива #{array_name} выходят за пределы своих возможных значений", :error)
+    end
+
+    all_good
   end
   
   def test_
