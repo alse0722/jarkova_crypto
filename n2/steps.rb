@@ -90,7 +90,7 @@ class Steps
 
   def step3
     puts "\nШаг 3: Генерируем массив точек вида 0, +-P, +-2P, ... , +-sP"
-    @loader.make_log(:step3, "Шаг 2: Вычисляем параметр s = [sqrt4(p)]", :ok, "\n")
+    @loader.make_log(:step3, "Шаг 3: Генерируем массив точек вида 0, +-P, +-2P, ... , +-sP", :ok, "\n")
 
     #берем параметры из файла
     @data = @loader.read_data(@data_file, "Параметры системы")
@@ -98,14 +98,10 @@ class Steps
 
     return ts2 if ts2[:status]!= :ok
 
-    puts "pupupu"
-    show_current_status if @debug_mode
-
     @data[:points_p] = [@zero]
 
     (1..@data[:s]).each do |i|
       start_point = @data[:point_p].dup
-      puts start_point
       @data[:points_p] << @points.mult(start_point, i)
       start_point = @data[:point_p].dup
       @data[:points_p] << @points.mult(start_point, -i)
@@ -120,6 +116,124 @@ class Steps
     @loader.write_data(@data, @data_file, "Параметры системы после шага 3")
 
     return @tests.test_step3
+  end
+
+  def step4
+    puts "\nШаг 4: Вычисляем точки Q = [2s+1]P и R = [q+1]P"
+    @loader.make_log(:step4, "Шаг 4: Вычисляем точки Q = [2s+1]P и R = [q+1]P", :ok, "\n")
+
+    #берем параметры из файла
+    @data = @loader.read_data(@data_file, "Параметры системы")
+    ts3 = @tests.test_step3
+
+    return ts3 if ts3[:status]!= :ok
+
+    @data[:point_q] = @points.mult(@data[:point_p], 2 * @data[:s] + 1)
+    @data[:point_r] = @points.mult(@data[:point_p], @data[:p] + 1)
+
+    show_current_status if @debug_mode
+
+    #логировние и запись состояния системы после шага в файл
+    @loader.make_log(:step4, "Вычислены точки Q = [2s+1]P и R = [q+1]P", :ok)
+    @loader.write_data(@data, @data_file, "Параметры системы после шага 4")
+
+    return @tests.test_step4
+  end
+
+  def step5
+    puts "\nШаг 5: Вычисляем точки вида R +- [i]Q, для всех i = (0..s)"
+    @loader.make_log(:step4, "Шаг 5: Вычисляем точки вида R +- [i]Q, для всех i = (0..s)", :ok, "\n")
+
+    #берем параметры из файла
+    @data = @loader.read_data(@data_file, "Параметры системы")
+    ts4 = @tests.test_step4
+
+    return ts4 if ts4[:status]!= :ok
+
+    @data[:points_rq] = []
+    (0..@data[:s]).each do |i|
+      @data[:points_rq] << @points.sum(@data[:point_r], @points.mult(@data[:point_q], i))
+      @data[:points_rq] << @points.sum(@data[:point_r], @points.mult(@data[:point_q], -i))
+    end
+
+    show_current_status if @debug_mode
+
+    #логировние и запись состояния системы после шага в файл
+    @loader.make_log(:step5, "Вычислены точки вида R +- [i]Q, для всех i = (0..s)", :ok)
+    @loader.write_data(@data, @data_file, "Параметры системы после шага 5")
+
+    return @tests.test_step5
+  end
+
+  def step6
+    puts "\nШаг 6: Составляем пары (i,j) для всех j=(0..s), для точек вида R +- [i]Q совпадающими с точками вида +-iP"
+    @loader.make_log(:step6, "Шаг 6: Составляем пары (i,j) для всех j=(0..s), для точек вида R +- [i]Q совпадающими с точками вида +-iP", :ok, "\n")
+
+    #берем параметры из файла
+    @data = @loader.read_data(@data_file, "Параметры системы")
+    ts5 = @tests.test_step5
+
+    return ts5 if ts5[:status]!= :ok
+
+    counter = 0
+    pairs = []
+
+    @data[:points_rq].each_with_index do |point, i|
+      pairs << {point: point, i: counter * (i.even? ? 1 : -1)}
+      counter += 1 if !i.even?
+    end
+
+    # pp pairs
+
+    @data[:koeffs_ij] = []
+
+    @data[:points_p].each do |p_point|
+      pairs.each do |rqi_pair|
+        if p_point == rqi_pair[:point]
+          # puts "P:#{p_point} RQ:#{rqi_pair[:point]} i:#{rqi_pair[:i]}"
+          (0..@data[:s]).each {|j| @data[:koeffs_ij] << {i:rqi_pair[:i], j: j}}
+        end
+      end
+    end
+
+    @data[:koeffs_ij].uniq!
+
+    show_current_status if @debug_mode
+
+    #логировние и запись состояния системы после шага в файл
+    @loader.make_log(:step6, "Шаг 6: Составлены пары (i,j) для всех j=(0..s), и i таких, что (R +- [i]Q) == (+-iP)", :ok)
+    @loader.write_data(@data, @data_file, "Параметры системы после шага 6")
+
+    return @tests.test_step5
+  end
+
+  def step7
+    puts "\nШаг 7: Вычисляем из пар (i, j) параметры mi = p + 1 + (2 * s + 1) * i - j" \
+      "и найдем порядок эллиптической кривой выполнив проверку ZERO == [mi]P." 
+    @loader.make_log(:step6, "Шаг 7: Вычисляем из пар (i, j) параметры mi = p + 1 + (2 * s + 1) * i - j" \
+      "и найдем порядок эллиптической кривой выполнив проверку ZERO == [mi]P.", :ok, "\n")
+
+    #берем параметры из файла
+    @data = @loader.read_data(@data_file, "Параметры системы")
+    ts6 = @tests.test_step6
+
+    return ts6 if ts6[:status]!= :ok
+
+    @data[:m_variants] = []
+
+    @data[:koeffs_ij].each do |koeff|
+      m_var = @data[:p] + 1 + (2 * @data[:s] + 1) * koeff[:i] - koeff[:j]
+      @data[:m_variants] << m_var if @points.mult(@data[:point_p], m_var)[:status] == :zero
+    end
+    
+    show_current_status if @debug_mode
+
+    #логировние и запись состояния системы после шага в файл
+    @loader.make_log(:step6, "Шаг 7: Вычисляем из пар (i, j) параметры mi = p + 1 + (2 * s + 1) * i - j" \
+      "и найдем порядок эллиптической кривой выполнив проверку ZERO == [mi]P.", :ok)
+    @loader.write_data(@data, @data_file, "Параметры системы после шага 7")
+
+    return @tests.test_step5
   end
 
   private
@@ -204,7 +318,7 @@ class Steps
     while @data[:y] == @data[:p] || @data[:x] == @data[:p] 
       @data[:x] = rand(@data[:p])
       @data[:y] = Square.new.call(@data[:x] ** 3 + @data[:a] * @data[:x] + @data[:b], @data[:p])
-      puts "#{@data[:x]}--#{@data[:y]}"
+      # puts "#{@data[:x]}--#{@data[:y]}"
     end
   end
 

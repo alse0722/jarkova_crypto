@@ -31,7 +31,8 @@ class Points
   end
 
   def mult(p, n)
-    
+    return @zero if n == 0
+
     inv = n < 0
     
     res = p
