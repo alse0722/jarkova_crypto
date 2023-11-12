@@ -184,24 +184,6 @@ class Tests
     return test_result
   end
 
-  # def test_step8
-  #   @td = @loader.get_data
-
-  #   all_good = (true
-      
-  #   )
-
-  #   if all_good
-  #     test_result = {status: :ok, msg: 'Проверка параметров шага 8 пройдена успешно'}
-  #   else
-  #     test_result = {status: :error, msg: 'Проверка параметров шага 8 не пройдена'}
-  #   end
-    
-  #   @loader.make_log(:test_step8, test_result[:msg], test_result[:status])
-
-  #   return test_result
-  # end
-
   private
 
   def test_existance(step, params = [])
@@ -247,7 +229,7 @@ class Tests
   def test_point_in_curve(step, point, point_name = nil)
     all_good = true
 
-    all_good &= (point[:y] ** 2).pow(1, @td[:p]) == (point[:x] ** 3 + @td[:a] * point[:x] + @td[:b]).pow(1, @td[:p])
+    all_good &= point[:status] == :zero ? true : (point[:y] ** 2).pow(1, @td[:p]) == (point[:x] ** 3 + @td[:a] * point[:x] + @td[:b]).pow(1, @td[:p])
 
     if all_good
       @loader.make_log(step, "Точка #{point_name.nil? ? point : point_name.to_s} принадлежит эллиптической кривой", :ok) if @debug_mode && !point_name.nil?
@@ -345,7 +327,7 @@ class Tests
 
   def test_point_value(step, point, point_name = nil)
     @points = Points.new(a: @td[:a], b: @td[:b], p: @td[:p])
-    pp @points
+    # pp @points
 
     all_good = true
 

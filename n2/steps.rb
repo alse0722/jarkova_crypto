@@ -1,5 +1,6 @@
 require 'json'
 require 'prime'
+require 'time'
 require './points.rb'
 require './loader.rb'
 require './tests.rb'
@@ -101,10 +102,12 @@ class Steps
     @data[:points_p] = [@zero]
 
     (1..@data[:s]).each do |i|
-      start_point = @data[:point_p].dup
+      start_point = @data[:point_p].clone
       @data[:points_p] << @points.mult(start_point, i)
-      start_point = @data[:point_p].dup
+      # pp @data[:points_p].last 
+      start_point = @data[:point_p].clone
       @data[:points_p] << @points.mult(start_point, -i)
+      # pp @data[:points_p].last 
     end
 
     # @data[:points_p].uniq!
@@ -192,6 +195,7 @@ class Steps
         if p_point == rqi_pair[:point]
           # puts "P:#{p_point} RQ:#{rqi_pair[:point]} i:#{rqi_pair[:i]}"
           (0..@data[:s]).each {|j| @data[:koeffs_ij] << {i:rqi_pair[:i], j: j}}
+          (0..@data[:s]).each {|j| @data[:koeffs_ij] << {i:rqi_pair[:i], j: -j}}
         end
       end
     end
@@ -221,34 +225,46 @@ class Steps
 
     @data[:m_variants] = []
 
+    puts "start check_candidate solo"
     @data[:koeffs_ij].each do |koeff|
       m_var = @data[:p] + 1 + (2 * @data[:s] + 1) * koeff[:i] - koeff[:j]
-      @data[:m_variants] << m_var if @points.mult(@data[:point_p], m_var)[:status] == :zero
+      @data[:m_variants] << m_var if check_candidate(@data[:point_p], m_var)
     end
     
+    puts @data[:m_variants]
+    puts "start cleanup_candidates"
+    cleanup_candidates if @data[:m_variants].count > 1
+
+    @data[:m] = @data[:m_variants].min
+
     show_current_status if @debug_mode
 
     #логировние и запись состояния системы после шага в файл
-    @loader.make_log(:step6, "Шаг 7: Вычисляем из пар (i, j) параметры mi = p + 1 + (2 * s + 1) * i - j" \
-      " и найдем порядок эллиптической кривой выполнив проверку ZERO == [mi]P.", :ok)
+    @loader.make_log(:step7, "Шаг 7: Вычислены из пар (i, j) параметры mi = p + 1 + (2 * s + 1) * i - j" \
+      " и найден порядок эллиптической кривой выполнив проверку ZERO == [mi]P.", :ok)
     @loader.write_data(@data, @data_file, "Параметры системы после шага 7")
 
     @tests.test_step7
 
-    return @data[:m_variants].first
+    return {m: @data[:m], candidates: @data[:m_variants]}
   end
 
   private
 
   def get_start_params
 
-    puts "\nВведите коэффициенты уравнения эллиптической кривой (a b):"
-    @a, @b = gets.strip.split.map(&:to_i)
-
     @p = 1
     while !@p.prime?
       puts "\nВведите простое число p:"
       @p = gets.to_i
+    end
+
+    puts "\nВведите коэффициенты уравнения эллиптической кривой (a b):"
+    @a, @b = gets.strip.split.map(&:to_i)
+
+    while check_curve_params
+      puts "\nКривая с заданными параметрами a, b и p является вырожденной, повторите ввод (a b):"
+      @a, @b = gets.strip.split.map(&:to_i)
     end
 
     if @debug_mode
@@ -313,14 +329,144 @@ class Steps
     old_data
   end
 
-  def gen_random_point
-    @data[:y] = @data[:p]
-    @data[:x] = @data[:p]
+  # def gen_random_point
+  #   # puts "in gen_random_point"
+  #   @data[:x] = rand(@data[:p])
+  #   # puts "new x: #{@data[:x]}"
+  #   @data[:y] = Square.new.call(count_sqrt, @data[:p]) 
+  #   # puts "#{@data[:x]}:#{@data[:y]}"
 
-    while @data[:y] == @data[:p] || @data[:x] == @data[:p] 
-      @data[:x] = rand(@data[:p])
-      @data[:y] = Square.new.call(@data[:x] ** 3 + @data[:a] * @data[:x] + @data[:b], @data[:p])
-      # puts "#{@data[:x]}--#{@data[:y]}"
+  #   while @data[:y] == @data[:p] || @data[:x] == @data[:p] || jacobi(@data[:y], @data[:p]) != 1
+  #     # puts "in while"
+  #     @data[:x] = (@data[:x] + 1) % @data[:p]
+  #     # puts "new x: #{@data[:x]}"
+  #     @data[:y] = Square.new.call(count_sqrt, @data[:p])
+  #   end
+  # end
+
+  def gen_random_point
+    @data[:x] = rand(@data[:p])
+
+    sqr = count_sqrt
+
+    while jacobi(sqr, @data[:p]) != 1
+      @data[:x] = (@data[:x] + 1) % @data[:p]
+      sqr = count_sqrt
+    end
+
+    @data[:y] = Square.new.call(sqr, @data[:p])
+
+    while @data[:y] == @data[:p] || @data[:x] == @data[:p] || jacobi(@data[:y], @data[:p]) != 1
+      
+      @data[:x] = (@data[:x] + 1) % @data[:p]
+
+      sqr = count_sqrt
+
+      while jacobi(sqr, @data[:p]) != 1
+        @data[:x] = (@data[:x] + 1) % @data[:p]
+        sqr = count_sqrt
+      end
+
+      @data[:y] = Square.new.call(sqr, @data[:p])
+    end
+
+  end
+
+  def gen_next_point
+    # puts "in gen_next_point"
+    @data[:x] = (@data[:x] + 1) % @data[:p]
+    # puts "new x: #{@data[:x]}"
+    @data[:y] = Square.new.call(count_sqrt, @data[:p])
+
+    while @data[:y] == @data[:p] || @data[:x] == @data[:p] || jacobi(@data[:y], @data[:p]) != 1
+      # puts "in while"
+      @data[:x] = (@data[:x] + 1) % @data[:p]
+      # puts "new x: #{@data[:x]}"
+      @data[:y] = Square.new.call(count_sqrt, @data[:p])
+    end
+  end
+
+  def check_candidate(point, m_var)
+    @points.mult(point, m_var)[:status] == :zero && check_m_ranges(m_var)
+  end
+
+  def cleanup_candidates
+    cnt = 1
+    # while @data[:m_variants].count > 1
+    (@data[:m_variants].max).times do
+      # puts "test_candidate in massive"
+      gen_random_point
+      new_point = @points.make_point(@data[:x], @data[:y], :ok)
+
+      # puts "[#{cnt}] #{new_point}"
+
+      old_candidates = @data[:m_variants]
+      
+      @data[:m_variants] = []
+
+      # puts "POINT #{new_point}"
+      if jacobi(new_point[:y], @data[:p]) == 0
+        @data[:m_variants] = old_candidates
+      else
+        old_candidates.each {|m| @data[:m_variants] << m if check_candidate(new_point, m)}
+      end
+
+      # old_candidates.each do |m|
+      #   if check_candidate(new_point, m)
+      #     puts "Точка #{new_point}"
+      #     @data[:m_variants] << m
+      #   end
+      # end
+
+      cnt+=1
+    end
+  end
+
+  def check_curve_params
+    (4 * (@a ** 3) + 27 * (@b ** 2)) % @p == 0
+  end
+
+  def check_m_ranges(m)
+    @data[:p] + 1 - 2 * Math.sqrt(@data[:p]) <= m && m <= @data[:p] + 1 + 2 * Math.sqrt(@data[:p])
+  end
+
+  def count_sqrt
+    sqr = @data[:x] ** 3 + @data[:a] * @data[:x] + @data[:b]
+    # puts "counted sqr = #{sqr}"
+    sqr
+  end
+
+  def jacobi(a, n)
+    if n < 3 || n % 2 == 0
+      puts "Нет решения! p должно быть нечетным и больше 2"
+      return nil
+    end
+  
+    a = a % n
+  
+    t = 1
+  
+    while a != 0
+      while a % 2 == 0
+        a /= 2
+        r = n % 8
+        if r == 3 || r == 5
+          t = -t
+        end
+      end
+  
+      a, n = n, a
+      if a % 4 == 3 && n % 4 == 3
+        t = -t
+      end
+  
+      a %= n
+    end
+  
+    if n == 1
+      return t
+    else
+      return 0
     end
   end
 

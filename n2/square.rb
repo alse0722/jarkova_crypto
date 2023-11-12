@@ -5,7 +5,7 @@ class Square
   def initialize
   end
 
-  def call(a, p)
+  def call_saul(a, p)
     m = 0
     q = p - 1
 
@@ -40,6 +40,10 @@ class Square
     rn.last
 
     generated_square(a,p)
+  end
+
+  def call(a, p)
+    generated_square(a, p)
   end
 
   private
@@ -115,9 +119,16 @@ class Square
   end
 
   def generated_square(a, p)
+
+    # puts "generated_square a = #{a}"
+    if a == 0
+      return 0
+    end
+
     y = 0
     while y < p && (y ** 2) % p != a % p
-      y += 1
+      y = y + 1
+      # puts "hui :#{y}"
     end
     
     return y

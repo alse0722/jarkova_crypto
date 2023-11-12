@@ -36,8 +36,17 @@ if test_result[:status] == :ok
               gets
               test_result = @steps.step7
               
-              puts "\nПорядок эллиптической кривой равен #{test_result}"
-              puts "\nПоиск порядка эллиптической кривой завершен. Программа прекращает работу"
+              if test_result[:candidates].count == 1
+                puts "\nПорядок эллиптической кривой равен #{test_result[:m]}"
+                puts "\nПоиск порядка эллиптической кривой завершен. Программа прекращает работу"
+              elsif test_result[:candidates].count == 0
+                puts "\nПорядок эллиптической кривой не вычислен. Обратитесь к логам"
+                puts "\nПоиск порядка эллиптической кривой завершен. Программа прекращает работу"
+              else
+                puts "\nНайдено несколько кандитатов, в качестве порядка эллиптической кривой выбран минимальный: #{test_result[:m]}"
+                puts "\nПолный список кандидатов: #{test_result[:candidates]}" 
+                puts "\nПоиск порядка эллиптической кривой завершен. Программа прекращает работу"
+              end
             else
               puts test_result[:msg] + ". Программа прекращает работу"
             end
@@ -59,15 +68,3 @@ if test_result[:status] == :ok
 else
   puts test_result[:msg] + ". Программа прекращает работу"
 end
-# gets
-# s2 = @steps.step2 if s1[:status] == :ok
-# gets
-# s3 = @steps.step3 if s2[:status] == :ok
-# gets
-# s4 = @steps.step4 if s3[:status] == :ok
-# gets
-# s5 = @steps.step5 if s4[:status] == :ok
-# gets
-# s6 = @steps.step6 if s5[:status] == :ok
-# gets
-# s7 = @steps.step7 if s6[:status] == :ok

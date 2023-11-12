@@ -10,7 +10,7 @@ class Points
     { x: x, y: y, status: status }
   end
 
-  def sum(p, q)
+  def sum1(p, q)
     r = {}
 
     return q if p[:status] == :zero
@@ -25,32 +25,81 @@ class Points
     end
 
     r[:x] = (m ** 2 - p[:x] - q[:x]).pow(1, @p)
-    r[:y] = (q[:y] + m * (r[:x] - q[:x])).pow(1, @p)
+    r[:y] = (m * (r[:x] - q[:x]) - q[:y]).pow(1, @p)
     r[:status] = :ok
-    return inverse2(r, @p)
+    return r
   end
 
-  def mult(p, n)
-    return @zero if n == 0
+  def sum(p, q)
+    r = {}
 
-    inv = n < 0
+    return q if p[:status] == :zero
+    return p if q[:status] == :zero
+
+    if p[:x] != q[:x]
+      m = ((p[:y] - q[:y]) * inverse(p[:x] - q[:x], @p))
+
+      r[:x] = (m ** 2 - (p[:x] + q[:x])) % @p
+      r[:y] = ((m * (p[:x] - r[:x])) - p[:y]) % @p
+      r[:status] = :ok
+    else
+      if p[:y] == q[:y]
+        m = ((3 * (p[:x] ** 2) + @a) * inverse(2 * p[:y], @p))
+        
+        r[:x] = (m ** 2 - 2 * p[:x]) % @p
+        r[:y] = (m * (p[:x] - r[:x]) - p[:y]) % @p
+        r[:status] = :ok
+      else
+        r = { x: :none, y: :none, status: :zero }
+      end
+    end
+
+    return r
+  end
+
+  def mult_slow(p, n)
+    return { x: :none, y: :none, status: :zero } if n == 0
     
-    res = p
+    res = { x: :none, y: :none, status: :zero }
+    
+    if n < 0
+      p = inverse2(p, @p)
+    end
 
-    (n.abs - 1).times do 
+    (n.abs).times do 
       res = sum(res, p)
     end
 
-    inv ? inverse2(res, @p) : res
+    res
   end
 
   def inverse2(a, p)
     if a[:status] == :zero
       return a
     end
-    
-    a[:y] = p - a[:y]
-    return a
+
+    # a[:y] = p - a[:y]
+    return {x: a[:x], y: (p - a[:y]) % p, status: a[:status]}
+  end
+
+  def mult(p, n)
+    return { x: :none, y: :none, status: :zero } if n == 0
+
+    if n < 0
+      p = inverse2(p, @p)
+      n = n.abs
+    end
+
+    res = { x: :none, y: :none, status: :zero }
+    temp_p = p.clone
+
+    while !n.zero?
+      res = sum(temp_p, res) if !n.even?
+      temp_p = sum(temp_p, temp_p)
+      n /= 2
+    end
+
+    return res
   end
 
   private
@@ -74,13 +123,6 @@ class Points
     gcd, x, y = exea(n, p)
     raise %{#{n} has no multiplicative inverse modulo #{p}} if gcd != 1
     x % p
-  end
-
-  def bits(n)
-    while n > 0
-      yield n & 1
-      n >>= 1
-    end
   end
 
 end
