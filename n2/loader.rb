@@ -60,11 +60,11 @@ class Loader
   end
 
   def make_log(src, msg, status, add = '')
-    src = "[#{src.to_s}]"
+    src = "[#{src.to_s.center(10)}]"
     curr_time = "[#{time}]"
     status = "[#{status.to_s}]"
     msg = " " + msg
-    log = add + curr_time + src + status + msg
+    log = [add, curr_time, status, src, msg].join
     add_data(log, @logs_file)
   end
 

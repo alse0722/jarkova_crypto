@@ -1,1 +1,0 @@
-{"a":1,"b":2,"p":3,"x":null,"y":null,"s":null,"m":null,"point_p":{"x":"none","y":"none","status":"zero"},"point_q":{"x":"none","y":"none","status":"zero"},"point_r":{"x":"none","y":"none","status":"zero"},"points_p":[],"points_rq":[],"koeffs_ij":[],"m_variants":[],"data_file":"data.rb","logs_file":"logs.txt"}
