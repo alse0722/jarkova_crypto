@@ -78,7 +78,6 @@ class Points
       return a
     end
 
-    # a[:y] = p - a[:y]
     return {x: a[:x], y: (p - a[:y]) % p, status: a[:status]}
   end
 

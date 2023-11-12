@@ -120,7 +120,6 @@ class Square
 
   def generated_square(a, p)
 
-    # puts "generated_square a = #{a}"
     if a == 0
       return 0
     end
@@ -128,7 +127,6 @@ class Square
     y = 0
     while y < p && (y ** 2) % p != a % p
       y = y + 1
-      # puts "hui :#{y}"
     end
     
     return y

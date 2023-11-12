@@ -104,13 +104,9 @@ class Steps
     (1..@data[:s]).each do |i|
       start_point = @data[:point_p].clone
       @data[:points_p] << @points.mult(start_point, i)
-      # pp @data[:points_p].last 
       start_point = @data[:point_p].clone
       @data[:points_p] << @points.mult(start_point, -i)
-      # pp @data[:points_p].last 
     end
-
-    # @data[:points_p].uniq!
 
     show_current_status if @debug_mode
 
@@ -186,14 +182,11 @@ class Steps
       counter += 1 if !i.even?
     end
 
-    # pp pairs
-
     @data[:koeffs_ij] = []
 
     @data[:points_p].each do |p_point|
       pairs.each do |rqi_pair|
         if p_point == rqi_pair[:point]
-          # puts "P:#{p_point} RQ:#{rqi_pair[:point]} i:#{rqi_pair[:i]}"
           (0..@data[:s]).each {|j| @data[:koeffs_ij] << {i:rqi_pair[:i], j: j}}
           (0..@data[:s]).each {|j| @data[:koeffs_ij] << {i:rqi_pair[:i], j: -j}}
         end
@@ -299,9 +292,6 @@ class Steps
       points_rq:    nil,
       koeffs_ij:    nil,
       m_variants:   nil
-      # ,
-      # data_file:    @data_file,
-      # logs_file:    @logs_file
     }
   end
 
@@ -328,21 +318,6 @@ class Steps
 
     old_data
   end
-
-  # def gen_random_point
-  #   # puts "in gen_random_point"
-  #   @data[:x] = rand(@data[:p])
-  #   # puts "new x: #{@data[:x]}"
-  #   @data[:y] = Square.new.call(count_sqrt, @data[:p]) 
-  #   # puts "#{@data[:x]}:#{@data[:y]}"
-
-  #   while @data[:y] == @data[:p] || @data[:x] == @data[:p] || jacobi(@data[:y], @data[:p]) != 1
-  #     # puts "in while"
-  #     @data[:x] = (@data[:x] + 1) % @data[:p]
-  #     # puts "new x: #{@data[:x]}"
-  #     @data[:y] = Square.new.call(count_sqrt, @data[:p])
-  #   end
-  # end
 
   def gen_random_point
     @data[:x] = rand(@data[:p])
@@ -373,15 +348,11 @@ class Steps
   end
 
   def gen_next_point
-    # puts "in gen_next_point"
     @data[:x] = (@data[:x] + 1) % @data[:p]
-    # puts "new x: #{@data[:x]}"
     @data[:y] = Square.new.call(count_sqrt, @data[:p])
 
     while @data[:y] == @data[:p] || @data[:x] == @data[:p] || jacobi(@data[:y], @data[:p]) != 1
-      # puts "in while"
       @data[:x] = (@data[:x] + 1) % @data[:p]
-      # puts "new x: #{@data[:x]}"
       @data[:y] = Square.new.call(count_sqrt, @data[:p])
     end
   end
@@ -392,31 +363,19 @@ class Steps
 
   def cleanup_candidates
     cnt = 1
-    # while @data[:m_variants].count > 1
     (@data[:m_variants].max).times do
-      # puts "test_candidate in massive"
       gen_random_point
       new_point = @points.make_point(@data[:x], @data[:y], :ok)
-
-      # puts "[#{cnt}] #{new_point}"
 
       old_candidates = @data[:m_variants]
       
       @data[:m_variants] = []
 
-      # puts "POINT #{new_point}"
       if jacobi(new_point[:y], @data[:p]) == 0
         @data[:m_variants] = old_candidates
       else
         old_candidates.each {|m| @data[:m_variants] << m if check_candidate(new_point, m)}
       end
-
-      # old_candidates.each do |m|
-      #   if check_candidate(new_point, m)
-      #     puts "Точка #{new_point}"
-      #     @data[:m_variants] << m
-      #   end
-      # end
 
       cnt+=1
     end
@@ -431,9 +390,7 @@ class Steps
   end
 
   def count_sqrt
-    sqr = @data[:x] ** 3 + @data[:a] * @data[:x] + @data[:b]
-    # puts "counted sqr = #{sqr}"
-    sqr
+    @data[:x] ** 3 + @data[:a] * @data[:x] + @data[:b]
   end
 
   def jacobi(a, n)

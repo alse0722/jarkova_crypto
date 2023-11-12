@@ -12,15 +12,12 @@ class Loader
   def write_data(hash, file_name, msg = '')
     data = hash.to_json
     File.write(file_name, data)
-    # puts "\n[system] Данные успешно записаны в файл #{file_name}!"
     
     if msg == ''
       str = "Данные записаны в файл #{file_name}"
     else
       str = msg + " записаны в файл #{file_name}"
     end
-
-    # make_log(:loader, str, :ok)
   end
 
   def add_data(str, file_name)
@@ -35,15 +32,12 @@ class Loader
     hash = hash_to_atom_keys(hash)
     hash = symbolize_strings(hash)
 
-    # puts "\n[system] Данные успешно прочитаны из файла #{file_name}!"
-
     if msg == ''
       str = "Данные прочитаны из файла #{file_name}"
     else
       str = msg + " прочитаны из файла #{file_name}"
     end
 
-    # make_log(:loader, str, :ok)
     return hash
   end
 

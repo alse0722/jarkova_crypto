@@ -327,7 +327,6 @@ class Tests
 
   def test_point_value(step, point, point_name = nil)
     @points = Points.new(a: @td[:a], b: @td[:b], p: @td[:p])
-    # pp @points
 
     all_good = true
 
