@@ -218,14 +218,11 @@ class Steps
 
     @data[:m_variants] = []
 
-    puts "start check_candidate solo"
     @data[:koeffs_ij].each do |koeff|
       m_var = @data[:p] + 1 + (2 * @data[:s] + 1) * koeff[:i] - koeff[:j]
       @data[:m_variants] << m_var if check_candidate(@data[:point_p], m_var)
     end
-    
-    puts @data[:m_variants]
-    puts "start cleanup_candidates"
+ 
     cleanup_candidates if @data[:m_variants].count > 1
 
     @data[:m] = @data[:m_variants].min
