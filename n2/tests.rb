@@ -409,14 +409,4 @@ class Tests
       @loader.make_log(step, "", :error)
     end
   end
-  
-  def test_
-    all_good = true
-
-    if all_good
-      @loader.make_log(step, "", :ok)
-    else
-      @loader.make_log(step, "", :error)
-    end
-  end
 end

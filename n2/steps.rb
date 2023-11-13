@@ -47,6 +47,12 @@ class Steps
 
   def step1
     puts "\nШаг 1: Генерация случайной точки P на эллиптической кривой"
+
+    if !@loader.test_all_files_ok
+      # puts "\nФайлы data.txt или logs.txt неисправны или отсутсвуют. Программа завершает работу"
+      return {status: :error, msg: "\nФайлы data.txt или logs.txt неисправны или отсутсвуют"}
+    end
+
     @loader.make_log(:step1, "Шаг 1: Генерация случайной точки P на эллиптической кривой", :ok, "\n")
 
     #берем параметры из файла
@@ -70,6 +76,12 @@ class Steps
 
   def step2
     puts "\nШаг 2: Вычисляем параметр s = [sqrt4(p)]"
+
+    if !@loader.test_all_files_ok
+      # puts "\nФайлы data.txt или logs.txt неисправны или отсутсвуют. Программа завершает работу"
+      return {status: :error, msg: "\nФайлы data.txt или logs.txt неисправны или отсутсвуют"}
+    end
+
     @loader.make_log(:step2, "Шаг 2: Вычисляем параметр s = [sqrt4(p)]", :ok, "\n")
 
     #берем параметры из файла
@@ -91,6 +103,12 @@ class Steps
 
   def step3
     puts "\nШаг 3: Генерируем массив точек вида 0, +-P, +-2P, ... , +-sP"
+
+    if !@loader.test_all_files_ok
+      # puts "\nФайлы data.txt или logs.txt неисправны или отсутсвуют. Программа завершает работу"
+      return {status: :error, msg: "\nФайлы data.txt или logs.txt неисправны или отсутсвуют"}
+    end
+
     @loader.make_log(:step3, "Шаг 3: Генерируем массив точек вида 0, +-P, +-2P, ... , +-sP", :ok, "\n")
 
     #берем параметры из файла
@@ -119,6 +137,12 @@ class Steps
 
   def step4
     puts "\nШаг 4: Вычисляем точки Q = [2s+1]P и R = [p+1]P"
+
+    if !@loader.test_all_files_ok
+      # puts "\nФайлы data.txt или logs.txt неисправны или отсутсвуют. Программа завершает работу"
+      return {status: :error, msg: "\nФайлы data.txt или logs.txt неисправны или отсутсвуют"}
+    end
+
     @loader.make_log(:step4, "Шаг 4: Вычисляем точки Q = [2s+1]P и R = [p+1]P", :ok, "\n")
 
     #берем параметры из файла
@@ -141,6 +165,12 @@ class Steps
 
   def step5
     puts "\nШаг 5: Вычисляем точки вида R +- [i]Q, для всех i = (0..s)"
+
+    if !@loader.test_all_files_ok
+      # puts "\nФайлы data.txt или logs.txt неисправны или отсутсвуют. Программа завершает работу"
+      return {status: :error, msg: "\nФайлы data.txt или logs.txt неисправны или отсутсвуют"}
+    end
+
     @loader.make_log(:step4, "Шаг 5: Вычисляем точки вида R +- [i]Q, для всех i = (0..s)", :ok, "\n")
 
     #берем параметры из файла
@@ -166,6 +196,12 @@ class Steps
 
   def step6
     puts "\nШаг 6: Составляем пары (i,j) для всех j=(0..s), для точек вида R +- [i]Q совпадающими с точками вида +-iP"
+
+    if !@loader.test_all_files_ok
+      # puts "\nФайлы data.txt или logs.txt неисправны или отсутсвуют. Программа завершает работу"
+      return {status: :error, msg: "\nФайлы data.txt или logs.txt неисправны или отсутсвуют"}
+    end
+
     @loader.make_log(:step6, "Шаг 6: Составляем пары (i,j) для всех j=(0..s), для точек вида R +- [i]Q совпадающими с точками вида +-iP", :ok, "\n")
 
     #берем параметры из файла
@@ -206,7 +242,13 @@ class Steps
 
   def step7
     puts "\nШаг 7: Вычисляем из пар (i, j) параметры mi = p + 1 + (2 * s + 1) * i - j" \
-      " и найдем порядок эллиптической кривой выполнив проверку ZERO == [mi]P." 
+      " и найдем порядок эллиптической кривой выполнив проверку ZERO == [mi]P."
+
+    if !@loader.test_all_files_ok
+      # puts "\nФайлы data.txt или logs.txt неисправны или отсутсвуют. Программа завершает работу"
+      return {status: :error, msg: "\nФайлы data.txt или logs.txt неисправны или отсутсвуют"}
+    end
+    
     @loader.make_log(:step6, "Шаг 7: Вычисляем из пар (i, j) параметры mi = p + 1 + (2 * s + 1) * i - j" \
       " и найдем порядок эллиптической кривой выполнив проверку ZERO == [mi]P.", :ok, "\n")
 
@@ -244,8 +286,12 @@ class Steps
   def get_start_params
 
     @p = 1
+
+    puts "\nВведите простое число p:"
+    @p = gets.to_i
+
     while !@p.prime?
-      puts "\nВведите простое число p:"
+      puts "\nЧисло p не простое. Повторите ввод:"
       @p = gets.to_i
     end
 

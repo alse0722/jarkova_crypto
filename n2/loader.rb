@@ -28,6 +28,11 @@ class Loader
 
   def read_data(file_name, msg = '')
     data = File.read(file_name)
+
+    if data == ''
+      return nil
+    end
+
     hash = JSON.parse(data, symbolize_names: true)
     hash = hash_to_atom_keys(hash)
     hash = symbolize_strings(hash)
@@ -60,6 +65,15 @@ class Loader
     msg = " " + msg
     log = [add, curr_time, status, src, msg].join
     add_data(log, @logs_file)
+  end
+
+  def test_all_files_ok
+    data_file_exist = File.exist?(@data_file)
+    logs_file_exist = File.exist?(@logs_file)
+
+    data_file_full = data_file_exist ? !read_data(@data_file).nil?  : false
+    
+    return data_file_exist && logs_file_exist && data_file_full
   end
 
   private
