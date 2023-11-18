@@ -119,7 +119,6 @@ class Tests
 
     data = loader.get_data
 
-    # pp data
     case mode
     when :steps
       params.each {|key| all_good &= !data[key.to_sym].nil?}

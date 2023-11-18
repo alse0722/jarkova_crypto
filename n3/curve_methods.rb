@@ -1,5 +1,4 @@
 require './points.rb'
-# require './generator.rb'
 
 class Methods
 
@@ -29,26 +28,13 @@ class Methods
       u = gluchov_algo(p, -d)
     end
 
-    # puts "gluchov_algo(#{p}, #{-d}): #{u}"
-
     u_arr = [u]
     m_arr = [p]
 
-    # pp "m_arr: #{m_arr}"
-    # pp "u_arr: #{u_arr}"
-
-    # puts "\n\twhile m_arr[-1] != 1"
     while m_arr[-1] != 1
       m_arr << (u_arr[-1] ** 2 + d) / m_arr[-1]
-      # pp "new_m: #{(u_arr[-1] ** 2 + d) / m_arr[-1]}"
       u_arr << [u_arr[-1].pow(1, m_arr[-1]), m_arr[-1] - u_arr[-1].pow(1, m_arr[-1])].min
-      # pp "m_arr: #{m_arr}"
-      # pp "u_arr: #{u_arr}"
     end
-
-    # puts "\nafter while"
-    # pp "m_arr: #{m_arr}"
-    # pp "u_arr: #{u_arr}"
 
     u_arr.delete(0)
     u_arr = u_arr.reverse()
@@ -56,13 +42,7 @@ class Methods
 
     a_arr = [u_arr[0]]
     b_arr = [1]
-
-    # puts "\nafter u_arr.delete(0)"
-    # pp "a_arr: #{a_arr}"
-    # pp "b_arr: #{b_arr}"
-    # pp "u_arr: #{u_arr}"
     
-
     u_arr[1..-1].each do |u|
       divisor = a_arr[-1] ** 2 + d * b_arr[-1] ** 2
       devided_a = if (u * a_arr[-1] + d * b_arr[-1]) % divisor == 0
@@ -91,7 +71,6 @@ class Methods
     n << n[2] * (-1)
 
     n = n.map {|e| e += p + 1}
-    # puts n
 
     triplets = []
 
@@ -152,14 +131,12 @@ class Methods
     n = data[:k] * data[:r]
     @curve = Points.new(a: 0, b: data[:b], p: data[:p])
     inf = @curve.mult({x: data[:xo], y: data[:yo]}, n)
-    # pp inf
     return inf[:status] != :zero
   end
 
   def step7(data)
     @curve = Points.new(a: 0, b: data[:b], p: data[:p], debug_mode: @points_debug_mode)
     q = @curve.mult({x: data[:xo], y: data[:yo]}, data[:k])
-    # pp q
     return {b: data[:b], p: data[:p], q: q, r: data[:r]}
   end
 
@@ -181,8 +158,6 @@ class Methods
       puts "\tbin: #{bin_str}"
       puts "\tbignum: #{num}"
       puts
-    # elsif @debug_mode == :default
-    #   puts "Generated rand number of #{@l} binary length: #{num}"
     end
 
     num
@@ -202,23 +177,21 @@ class Methods
     end
 
     g.times do
-      # pp "n: #{n}, rand: #{rand(n-4)}, a: #{2 + rand(n - 4)}"
-      
+
       if n == 4 
         a = 2
       else
         a = 2 + rand(n - 4)
       end
 
-      x = a.pow(d, n)  # x = (a**d) % n
+      x = a.pow(d, n)
       
       next if x == 1 || x == n - 1
       
       for r in (1..s - 1)
-        x = x.pow(2, n) # x = (x**2) % n
+        x = x.pow(2, n)
           if x == 1
             puts "\tNumber #{n} is not prime!\n" if @debug_mode == :all
-            # puts "Miller-Rabin test for #{n}: is not prime!" @debug_mode == :default
             return false 
           end
         break if x == n - 1
@@ -226,7 +199,6 @@ class Methods
 
       if x != n - 1
         puts "\tNumber #{n} is not prime!\n" if @debug_mode == :all
-        # puts "Miller-Rabin test for #{n}: is not prime!" @debug_mode == :default
         return false
       end
     end
@@ -237,7 +209,7 @@ class Methods
       puts "Miller-Rabin test for #{n}: is probably prime!"
     end
 
-    true # probably
+    true
   end
 
   def gen_big_prime
@@ -253,23 +225,17 @@ class Methods
   end
 
   def gcd_ext(a, b, first = true)
-    # puts "using extended gcd(#{a}, #{b})" if @debug_mode == :all && first
 
     if a == 0
       return b, 0, 1
     else
       res, x, y = gcd_ext(b%a, a, false)
-      #debug
-      # sleep 0.5 if @debug_mode == :all
-      # puts "gcd(#{a}, #{b}); koeff: (#{x}, #{y})" if @debug_mode == :all
       return res, y - (b / a) * x, x
     end
   end
 
   def inverse(a, md)
-    # puts %{using inverse of #{a} in #{md}} if @debug_mode == :all
     gcd, x, _ = gcd_ext(a, md)
-    # puts %{gcd = #{gcd}, x = #{x}} if @debug_mode == :all
     if gcd != 1
       raise "\nNo inverse element exists\n"
     else
@@ -278,16 +244,9 @@ class Methods
   end
 
   def set_ki(ai = 0, q = 0, p = 0)
-
-    # if @debug_mode == :all
-    #   puts "[debug] set_ki"
-    #   puts "\tai:#{ai}, q:#{q}, p:#{p}\n"
-    # end
     k = 0
 
     while ai.pow((2 ** k) * q, p) != 1
-      # puts k if  @debug_mode == :all
-      # sleep 0.2 if @debug_mode == :all
       k += 1 
     end
 

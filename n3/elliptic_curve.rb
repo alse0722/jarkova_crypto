@@ -4,13 +4,10 @@ require './curve_methods.rb'
 class EllipticCurve
   def initialize(params = {})
     @methods = Methods.new(params.dig(:methods_params))
-    # @points = Points.new(params.dig(:points_params))
 
     @debug_mode = params.dig(:debug_mode).to_sym
     @by_steps = params.dig(:by_steps)
     @filename = params.dig(:filename).to_s
-    # @bin_length = params.dig(:bin_length)
-    # @m_parameter = params.dig(:m_parameter)
   end
 
   def get_generator
@@ -100,7 +97,7 @@ class EllipticCurve
     end
     gets if @by_steps
 
-    puts "\n[Elliptic curve generator] Formed generator (p, B, Q, r) of elliptic curve"
+    puts "\n[Генератор эллиптической кривой] Сформирован генератор (p, B, Q, r) эллиптической кривой:"
     puts "\tp = #{s7[:p]}"
     puts "\tB = #{s7[:b]}"
     puts "\tQ = #{s7[:q]}"
@@ -119,20 +116,18 @@ class EllipticCurve
 end
 
 def start
-  puts "\n[Elliptic curve generator] Enter l > 2"
+  puts "\n[Генератор эллиптической кривой] Введите параметр l (l > 2):"
   @l = gets.strip.to_i
 
   while @l < 3
-    puts "[Elliptic curve generator] l is too low!\n\n[Input] Enter l > 2"
+    puts "[Генератор эллиптической кривой] Параметр l слишком мал. Поавторите ввод (l > 2):"
     @l = gets.strip.to_i
   end
 
-  puts "\n[Elliptic curve generator] Enter m"
+  puts "\n[Генератор эллиптической кривой] Введите параметр m:"
   @m = gets.strip.to_i
 
   params = {
-    # bin_length: 12,
-    # m_parameter: 13,
     debug_mode: 'none',
     by_steps: false,
     methods_params: {
@@ -144,12 +139,6 @@ def start
   }
 
   curve = EllipticCurve.new(params)
-  # pp gen
   forming_data = {a: 0}.merge(curve.get_generator)
 end
 
-# generator = Generator.new({debug_mode: 'all', data: forming_data, filename: 'coordinates.txt'})
-# # pp generator
-# points = generator.start
-# generator.to_file(points)
-# # generator.show
