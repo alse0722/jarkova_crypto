@@ -172,7 +172,7 @@ class Steps
 
     return {status: :error, msg: 'Ошибка чтения файла'} if !check_loaders
 
-    @logs_loader.make_log(:step3, "Шаг 4: Проверка сообщения с подписью", :ok, "\n")
+    @logs_loader.make_log(:step4, "Шаг 4: Проверка сообщения с подписью", :ok, "\n")
 
     ts3 = @tests.test_step3
     return ts3 if ts3[:status]!= :ok
@@ -206,7 +206,7 @@ class Steps
     show_current_status(formed_message, :formed_message) if @debug_mode
     show_current_status(point_r_new, :point_r_new) if @debug_mode
     show_current_status(e_new, :e_new) if @debug_mode
-    
+
     puts "\nШаг 4: Проверка сообщения с подписью завершена"
 
     return {result: formed_message[:e] == e_new, status: :ok}
