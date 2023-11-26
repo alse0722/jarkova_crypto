@@ -14,11 +14,13 @@ class Steps
 
     custom_dir = './files/'
     @logs_file = custom_dir + 'logs.txt'
+    @mess_file = custom_dir + 'mess.txt'
     @curve_file = custom_dir + 'curve_params.txt'
     @open_key_file = custom_dir + 'open_key.txt'
     @secret_key_file = custom_dir + 'secret_key.txt'
     @formed_message_file = custom_dir + 'formed_message.txt'
 
+    @mess_loader = Loader.new(@mess_file, @logs_file, @loader_debug_mode)
     @logs_loader = Loader.new(@logs_file, @logs_file, @loader_debug_mode)
     @curve_loader = Loader.new(@curve_file, @logs_file, @loader_debug_mode)
     @open_key_loader = Loader.new(@open_key_file, @logs_file, @loader_debug_mode)
@@ -54,6 +56,9 @@ class Steps
     ts0 = @tests.test_step0
     return ts0 if ts0[:status]!= :ok
 
+    tm0 = @tests.test_mess0
+    return tm0 if tm0[:status]!= :ok
+
     curve_generator = get_curve_generator
 
     show_current_status(curve_generator, :curve_generator) if @debug_mode
@@ -62,6 +67,10 @@ class Steps
 
     @logs_loader.make_log(:step1, "Найден генератор эллиптической кривой", :ok)
     @curve_loader.write_data(curve_generator, @curve_file)
+
+    @mess = @mess_loader.get_data
+    @mess.merge!(curve_generator)
+    @mess_loader.write_data(@mess, @mess_file)
 
     return @tests.test_step1
   end
@@ -75,6 +84,9 @@ class Steps
 
     ts1 = @tests.test_step1
     return ts1 if ts1[:status]!= :ok
+
+    tm1 = @tests.test_mess1
+    return tm1 if tm1[:status]!= :ok
 
     c_gen = @curve_loader.get_data
 
@@ -112,6 +124,11 @@ class Steps
     @open_key_loader.write_data(open_key, @open_key_file)
     @logs_loader.make_log(:step2, "Вычислен открытый ключ", :ok)
 
+    @mess = @mess_loader.get_data
+    @mess.merge!(open_key)
+    @mess.merge!(secret_key)
+    @mess_loader.write_data(@mess, @mess_file)
+
     return @tests.test_step2
   end
 
@@ -124,6 +141,9 @@ class Steps
 
     ts2 = @tests.test_step2
     return ts2 if ts2[:status]!= :ok
+
+    tm2 = @tests.test_mess2
+    return tm2 if tm2[:status]!= :ok
 
     text = get_message
 
@@ -163,6 +183,11 @@ class Steps
     @formed_message_loader.write_data(formed_message, @formed_message_file)
     @logs_loader.make_log(:step2, "Формирование сообщения с подписью завершено", :ok)
 
+    @mess = @mess_loader.get_data
+    @mess.merge!(formed_message)
+    @mess.merge!(random_k: random_k)
+    @mess_loader.write_data(@mess, @mess_file)
+
     return @tests.test_step3
   end
 
@@ -176,6 +201,9 @@ class Steps
 
     ts3 = @tests.test_step3
     return ts3 if ts3[:status]!= :ok
+
+    tm3 = @tests.test_mess3
+    return tm3 if tm3[:status]!= :ok
 
     open_key = @open_key_loader.get_data
     formed_message = @formed_message_loader.get_data
@@ -220,7 +248,7 @@ class Steps
     l = gets.strip.to_i
 
     while l < 3
-      puts "[Генератор эллиптической кривой] Параметр l слишком мал. Поавторите ввод (l > 2):"
+      puts "[Генератор эллиптической кривой] Параметр l слишком мал. Повторите ввод (l > 2):"
       l = gets.strip.to_i
     end
 
@@ -255,6 +283,7 @@ class Steps
   def init_tests
     @tests = Tests.new(
       { 
+        mess_loader: @mess_loader,
         logs_loader: @logs_loader,
         curve_loader: @curve_loader,
         open_key_loader: @open_key_loader,
@@ -295,16 +324,20 @@ class Steps
       e: nil,
       s: nil
     }
+
+    @mess = @curve.merge(@open_key).merge(@secret_key).merge(msg: @msg).merge(@formed_message)
   end
 
   def form_main_objects
     @curve_loader.recreate_file(@logs_file)
 
+    @mess_loader.recreate_file(@mess_file)
     @curve_loader.recreate_file(@curve_file)
     @open_key_loader.recreate_file(@open_key_file)
     @secret_key_loader.recreate_file(@secret_key_file)
     @formed_message_loader.recreate_file(@formed_message_file)
 
+    @mess_loader.write_data(@mess, @mess_file, "Начальные (нулевые) параметры")
     @curve_loader.write_data(@curve, @curve_file, "Начальные (нулевые) параметры")
     @open_key_loader.write_data(@open_key, @open_key_file, "Начальные (нулевые) параметры")
     @secret_key_loader.write_data(@secret_key, @secret_key_file, "Начальные (нулевые) параметры")
@@ -321,6 +354,7 @@ class Steps
   def check_loaders
     not_ok_loaders = []
 
+    not_ok_loaders << @mess_file if !@mess_loader.test_all_files_ok
     not_ok_loaders << @curve_file if !@curve_loader.test_all_files_ok
     not_ok_loaders << @open_key_file if !@open_key_loader.test_all_files_ok
     not_ok_loaders << @secret_key_file if !@secret_key_loader.test_all_files_ok

@@ -4,6 +4,7 @@ class Tests
   def initialize(params = {})
     @debug_mode = params.dig(:debug_mode) || true
     
+    @mess_loader = params.dig(:mess_loader)
     @logs_loader = params.dig(:logs_loader)
     @curve_loader = params.dig(:curve_loader)
     @open_key_loader = params.dig(:open_key_loader)
@@ -31,6 +32,26 @@ class Tests
     return test_result
   end
 
+  def test_mess0
+
+    all_good = (
+      test_existance(@mess_loader, :test_mess0, [:a, :b, :p, :point_q, :r], :start) &&
+      test_existance(@mess_loader, :test_mess0, [:a, :b, :p, :r, :point_q, :point_p], :start) &&
+      test_existance(@mess_loader, :test_mess0, [:l], :start) &&
+      test_existance(@mess_loader, :test_mess0, [:m, :e, :s], :start)
+    )
+
+    if all_good
+      test_result = {status: :ok, msg: 'Проверка параметров шага 0 пройдена успешно'}
+    else
+      test_result = {status: :error, msg: 'Проверка параметров шага 0 не пройдена'}
+    end
+
+    @logs_loader.make_log(:test_mess0, test_result[:msg], test_result[:status])
+
+    return test_result
+  end
+
   def test_step1
     @cd = @curve_loader.get_data
 
@@ -51,6 +72,30 @@ class Tests
     end
 
     @logs_loader.make_log(:test_step1, test_result[:msg], test_result[:status])
+
+    return test_result
+  end
+
+  def test_mess1
+    @ms = @mess_loader.get_data
+
+    all_good = (
+      test_existance(@mess_loader, :test_mess1, [:a, :b, :p, :point_q, :r]) &&
+      test_value_is_prime(:test_mess1, @ms[:p], :p) &&
+      test_value_is_zero(:test_mess1, @ms[:a], :a) &&
+      test_value_in_range(:test_mess1, @ms[:b], 0, @ms[:p], :b) &&
+      test_point_fullness(:test_mess1, @ms[:point_q], :point_q) &&
+      test_point_in_curve(:test_mess1, @ms[:point_q], @ms, :point_q) &&
+      test_generator(:test_mess1, @ms[:point_q], @ms[:r], :r)
+    )
+
+    if all_good
+      test_result = {status: :ok, msg: 'Проверка параметров шага 1 пройдена успешно'}
+    else
+      test_result = {status: :error, msg: 'Проверка параметров шага 1 не пройдена'}
+    end
+
+    @logs_loader.make_log(:test_mess1, test_result[:msg], test_result[:status])
 
     return test_result
   end
@@ -85,6 +130,35 @@ class Tests
     return test_result
   end
 
+  def test_mess2
+    @ms = @mess_loader.get_data
+
+    all_good = (
+      test_existance(@mess_loader, :test_mess2, [:a, :b, :p, :r, :point_q, :point_p]) &&
+      test_existance(@mess_loader, :test_mess2, [:l]) &&
+      test_value_is_prime(:test_mess2, @ms[:p], :p) &&
+      test_value_is_zero(:test_mess2, @ms[:a], :a) &&
+      test_value_in_range(:test_mess2, @ms[:b], 0, @ms[:p], :b) &&
+      test_value_in_range(:test_mess2, @ms[:l], 0, @ms[:p], :b) &&
+      test_point_fullness(:test_mess2, @ms[:point_q], :point_q) &&
+      test_point_in_curve(:test_mess2, @ms[:point_q], @ms, :point_q) &&
+      test_point_fullness(:test_mess2, @ms[:point_p], :point_p) &&
+      test_point_in_curve(:test_mess2, @ms[:point_p], @ms, :point_p) &&
+      test_generator(:test_mess2, @ms[:point_q], @ms[:r], :r) &&
+      test_key_generation(:test_mess2, @ms[:point_p], @ms[:point_q], @ms[:l])
+    )
+
+    if all_good
+      test_result = {status: :ok, msg: 'Проверка параметров шага 2 пройдена успешно'}
+    else
+      test_result = {status: :error, msg: 'Проверка параметров шага 2 не пройдена'}
+    end
+
+    @logs_loader.make_log(:test_mess2, test_result[:msg], test_result[:status])
+
+    return test_result
+  end
+
   def test_step3
     @ok = @open_key_loader.get_data
 
@@ -108,6 +182,35 @@ class Tests
     end
 
     @logs_loader.make_log(:test_step3, test_result[:msg], test_result[:status])
+
+    return test_result
+  end
+
+  def test_mess3
+    @ms = @mess_loader.get_data
+
+    all_good = (
+      test_existance(@mess_loader, :test_mess3, [:a, :b, :p, :r, :point_q, :point_p]) &&
+      test_existance(@mess_loader, :test_mess3, [:l]) &&
+      test_value_is_prime(:test_mess3, @ms[:p], :p) &&
+      test_value_is_zero(:test_mess3, @ms[:a], :a) &&
+      test_value_in_range(:test_mess3, @ms[:b], 0, @ms[:p], :b) &&
+      test_value_in_range(:test_mess3, @ms[:l], 0, @ms[:p], :b) &&
+      test_point_fullness(:test_mess3, @ms[:point_q], :point_q) &&
+      test_point_in_curve(:test_mess3, @ms[:point_q], @ms, :point_q) &&
+      test_point_fullness(:test_mess3, @ms[:point_p], :point_p) &&
+      test_point_in_curve(:test_mess3, @ms[:point_p], @ms, :point_p) &&
+      test_generator(:test_mess3, @ms[:point_q], @ms[:r], :r) &&
+      test_key_generation(:test_mess3, @ms[:point_p], @ms[:point_q], @ms[:l])
+    )
+
+    if all_good
+      test_result = {status: :ok, msg: 'Проверка параметров шага 3 пройдена успешно'}
+    else
+      test_result = {status: :error, msg: 'Проверка параметров шага 3 не пройдена'}
+    end
+
+    @logs_loader.make_log(:test_mess3, test_result[:msg], test_result[:status])
 
     return test_result
   end
@@ -242,19 +345,5 @@ class Tests
 
     all_good
   end
-
-  def test_(step)
-    all_good = true
-
-    if all_good
-      @logs_loader.make_log(step, "", :ok)
-    else
-      @logs_loader.make_log(step, "", :error)
-    end
-
-    all_good
-  end
-
-
 
 end
